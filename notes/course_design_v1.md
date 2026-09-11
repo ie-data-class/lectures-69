@@ -83,23 +83,39 @@ Python stack: `pandas`, `numpy`, `scipy.stats`, `matplotlib`, `seaborn`
 
 ### Module 2: Statistical Process Control (Weeks 3–4)
 
-**Week 3 — Control Charts in Python**
+**Week 3 — Real-Time vs. Batch SPC, and Control Charts in Python**
 
-Core topics:
+The week opens with a framing discussion on how SPC is actually deployed in industry before any charts are constructed. This sets up an industrial mindset for the rest of Module 2 and motivates why different chart types exist.
+
+**Opening framing: Real-Time vs. Batch SPC**
+
+|                       | Batch SPC                                                          | Real-Time SPC                                           |
+| --------------------- | ------------------------------------------------------------------ | ------------------------------------------------------- |
+| When data is analyzed | After a production run or shift                                    | As each observation arrives                             |
+| Typical use           | Phase I limit-setting, end-of-lot inspection, retrospective review | In-situ sensor monitoring, automatic process adjustment |
+| Action lag            | Hours to days                                                      | Seconds to minutes                                      |
+| Chart types           | X̄-R, X̄-S, p, c (classical Shewhart)                                | EWMA, CUSUM (Week 4)                                    |
+| Python pattern        | Load CSV, compute full chart in one pass                           | Streaming or event-driven update                        |
+
+Key point for students: the X̄-R chart they are about to build by hand is a batch tool — it assumes you have all the data in front of you. EWMA and CUSUM (Week 4) exist precisely because some processes cannot wait for a batch review. Understanding this distinction helps students choose the right chart for a given industrial context.
+
+_Note: real-time infrastructure (Kafka, streaming pipelines, IoT platforms) is a data engineering topic outside the scope of this course. The focus here is on the conceptual and statistical distinction, illustrated with industrial examples such as semiconductor in-situ sensor monitoring versus end-of-lot inspection._
+
+**Core topics:**
 
 - The logic of control limits: 3σ from process mean, not specification limits
 - X̄-R and I-MR charts: construction, interpretation, run rules
-- Automating chart generation from raw timestamped data
+- Automating batch chart generation from raw timestamped data in Python
 
-Hand-calculation anchor: 10 subgroups, n = 5. Students compute X̄ and R for each subgroup, look up A₂/D₃/D₄ constants, calculate UCL and LCL, and plot by hand. Identify any out-of-control signals. Then Python reproduces the same chart on a full production dataset.
+Hand-calculation anchor: 10 subgroups, n = 5. Students compute X̄ and R for each subgroup, look up A₂/D₃/D₄ constants, calculate UCL and LCL, and plot by hand. Identify any out-of-control signals. Then Python reproduces the same chart on a full production dataset — demonstrating the batch SPC workflow end-to-end.
 
-Note: Since students had a prior QC course, the conceptual "why" of control charts can be reviewed quickly. The value-add here is Python automation and dealing with real, timestamped industrial data rather than textbook datasets.
+Note: Since students had a prior QC course, the conceptual "why" of control charts can be reviewed quickly. The value-add here is the real-time vs. batch framing, Python automation, and dealing with real, timestamped industrial data rather than textbook datasets.
 
 **Week 4 — Advanced SPC and Process Capability**
 
 Core topics:
 
-- EWMA chart: weighted moving average logic, tuning the λ parameter
+- EWMA chart: weighted moving average logic, tuning the λ parameter — introduced as the canonical real-time SPC tool (contrast with the batch X̄-R chart from Week 3)
 - Process capability: Cp, Cpk — what they mean and how they differ
 - Connecting data quality (Module 1) to process monitoring: clean data is a prerequisite for meaningful control charts
 
@@ -186,3 +202,5 @@ Each section includes a short written narrative — not just code output. Studen
 **Why emphasize output interpretation over code writing?** AI tools make code generation trivially easy but cannot reliably perform industrial reasoning: "given this interaction plot, which factor settings would you run and why?" Shifting assessment toward interpretation questions tests what actually matters for an industrial engineer's career and closes the AI-assisted-cheating gap.
 
 **Why keep some hand calculations?** A student who can compute a control chart limit by hand and match it to Python output has demonstrated genuine understanding of the algorithm. This proof is impossible to fake with AI in a closed-book setting and anchors the Python output in real meaning rather than black-box trust.
+
+**Why introduce real-time vs. batch SPC as a framing concept rather than a separate topic?** Most textbook treatments of SPC present control charts without explaining when batch review is insufficient. Introducing this distinction at the start of Module 2 gives students a practical decision framework — "which mode does this process actually need?" — and motivates the move from Shewhart charts (Week 3) to EWMA/CUSUM (Week 4) as a logical progression rather than an arbitrary syllabus choice. Keeping it conceptual, without implementation of streaming infrastructure, ensures it fits within a single lecture opening without displacing the core chart-building content.
